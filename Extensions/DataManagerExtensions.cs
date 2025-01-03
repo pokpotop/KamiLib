@@ -19,7 +19,7 @@ public enum DutyType {
 
 public static class DataManagerExtensions {
 	public static IEnumerable<ContentFinderCondition> GetSavageDuties(this IDataManager dataManager)
-		=> dataManager.GetExcelSheet<ContentFinderCondition>(ClientLanguage.English)?
+		=> dataManager.GetExcelSheet<ContentFinderCondition>(ClientLanguage.Korean)?
 			   .Where(cfc => cfc is { ContentType.Row: 5 })
 			   .Where(cfc => cfc.Name.RawString.Contains("Savage")) ?? [];
 
@@ -28,12 +28,12 @@ public static class DataManagerExtensions {
 			   .Where(cfc => cfc is { ContentType.Row: 28 }) ?? [];
 
 	public static IEnumerable<ContentFinderCondition> GetExtremeDuties(this IDataManager dataManager)
-		=> dataManager.GetExcelSheet<ContentFinderCondition>(ClientLanguage.English)?
+		=> dataManager.GetExcelSheet<ContentFinderCondition>(ClientLanguage.Korean)?
 			   .Where(cfc => cfc is { ContentType.Row: 4, HighEndDuty: false })
 			   .Where(cfc => cfc.Name.RawString.Contains("Extreme")) ?? [];
 
 	public static IEnumerable<ContentFinderCondition> GetUnrealDuties(this IDataManager dataManager)
-		=> dataManager.GetExcelSheet<ContentFinderCondition>(ClientLanguage.English)?
+		=> dataManager.GetExcelSheet<ContentFinderCondition>(ClientLanguage.Korean)?
 			   .Where(cfc => cfc is { ContentType.Row: 4, HighEndDuty: true }) ?? [];
 
 	public static IEnumerable<ContentFinderCondition> GetCriterionDuties(this IDataManager dataManager)
@@ -53,7 +53,7 @@ public static class DataManagerExtensions {
 	public static IEnumerable<ContentFinderCondition> GetLimitedSavageDuties(this IDataManager dataManager)
 		=> dataManager.GetLimitedDuties()
 			.Where(cfc => cfc is { ContentType.Row: 5 })
-			.Where(cfc => cfc.Name.RawString.Contains("Savage"));
+			.Where(cfc => cfc.Name.RawString.Contains("(영웅)"));
     
 	private static IEnumerable<ContentFinderCondition> GetLimitedDuties(this IDataManager dataManager)
 		=> dataManager.GetExcelSheet<ContentFinderCondition>()?
@@ -63,12 +63,12 @@ public static class DataManagerExtensions {
 				                 .Contains(cfc.Content) ?? false) ?? [];
 
 	public static DutyType GetDutyType(this IDataManager dataManager, ContentFinderCondition cfc) {
-		var englishCfc = dataManager.GetExcelSheet<ContentFinderCondition>(ClientLanguage.English)!.GetRow(cfc.RowId);
+		var englishCfc = dataManager.GetExcelSheet<ContentFinderCondition>(ClientLanguage.Korean)!.GetRow(cfc.RowId);
 
 		return englishCfc switch {
-			{ ContentType.Row: 5 } when englishCfc.Name.ToString().Contains("Savage") => DutyType.Savage,
+			{ ContentType.Row: 5 } when englishCfc.Name.ToString().Contains("(영웅)") => DutyType.Savage,
 			{ ContentType.Row: 28 } => DutyType.Ultimate,
-			{ ContentType.Row: 4, HighEndDuty: false } when englishCfc.Name.ToString().Contains("Extreme") => DutyType.Extreme,
+			{ ContentType.Row: 4, HighEndDuty: false } when englishCfc.Name.ToString().Contains("극 ") || englishCfc.Name.ToString().Contains("종극의") || englishCfc.Name.ToString().Contains("궁극의 환상")=> DutyType.Extreme,
 			{ ContentType.Row: 4, HighEndDuty: true } => DutyType.Unreal,
 			{ ContentType.Row: 30, AllowUndersized: false } => DutyType.Criterion,
 			{ ContentType.Row: 5, ContentMemberType.Row: 4 } => DutyType.Alliance,
